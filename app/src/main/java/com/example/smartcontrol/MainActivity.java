@@ -330,30 +330,36 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         btn_right.setOnTouchListener(MyTai);
         btn_left.setOnTouchListener(MyTai);
 
-        theSeek = findViewById(R.id.seekBar3);
+        theSeek = (SeekBar) findViewById(R.id.seekBar3);
         theSeek.setProgressDrawable(null);
         theSeek.setProgress(50);
         theSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //Utils.LogE("progress:"+progress);
-               if(progress>50){
-                   dataTwoByte[0] = 0x1A;
-                   if(timer12 == null){
-                       timer12=new Timer();
-                       mt12 = new MyTimerTask();
-                       mt12.MyFlag = 1;
-                       timer12.schedule(mt12,0,200);
-                   }
-               }else if(progress<50){
-                   dataTwoByte[0] = 0x2A;
-                   if(timer12 == null){
-                       timer12=new Timer();
-                       mt12 = new MyTimerTask();
-                       mt12.MyFlag = 2;
-                       timer12.schedule(mt12,0,200);
-                   }
-               }
+                if(progress<47){//前进
+                    //dataTwoByte[0] = 0x1A;
+                    //将seekbar的波动范围映射成0x10-0x1F 十六个档位
+                    dataTwoByte[0] = (byte)(0x10 | Utils.intToButeArray(Math.abs(46-progress)/3)[1]);
+
+                    if(timer12 == null){
+                        timer12=new Timer();
+                        mt12 = new MyTimerTask();
+                        mt12.MyFlag = 1;
+                        timer12.schedule(mt12,0,200);
+                    }
+                }else if(progress>54){//后退
+                    //dataTwoByte[0] = 0x2A;
+                    //将seekbar的波动范围映射成0x20-0x2F 十六个档位
+                    dataTwoByte[0] = (byte)(0x20 | Utils.intToButeArray(Math.abs(55-progress)/3)[1]);
+
+                    if(timer12 == null){
+                        timer12=new Timer();
+                        mt12 = new MyTimerTask();
+                        mt12.MyFlag = 2;
+                        timer12.schedule(mt12,0,200);
+                    }
+                }
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -373,6 +379,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
             }
         });
+
+        reveiveFlag = false;
+        mSendBle = new SendBle(this);
     }
     void setFullScreen(){
         // 隐藏标题栏
@@ -793,11 +802,11 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 //                switchFlag++;
 //                if(switchFlag%2 == 0){
 //                    myHandler.sendEmptyMessage(11);
-//                    Toast.makeText(MainActivity.this,"收" ,Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(ControllerActivity.this,"收" ,Toast.LENGTH_SHORT).show();
 //                }
 //                else{
 //                    myHandler.sendEmptyMessage(122);
-//                    Toast.makeText(MainActivity.this,"停" ,Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(ControllerActivity.this,"停" ,Toast.LENGTH_SHORT).show();
 //                }
 //                break;
             case R.id.btn_more2598:
